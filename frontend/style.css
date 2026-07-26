@@ -1,0 +1,410 @@
+/* ═══ Morning Fog Design System ═══ */
+:root {
+  --fog: #E8ECF1;
+  --closet: #1B2838;
+  --rail: #3D5A80;
+  --sunrise: #EE6C4D;
+  --tshirt: #FFFFFF;
+  --tag: #98C1D9;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(27,40,56,0.06);
+  --font-display: "Space Grotesk", "Noto Sans SC", sans-serif;
+  --font-body: "Noto Sans SC", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--fog);
+  color: var(--closet);
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+header { position: relative; padding: 20px 0 0; text-align: center; }
+.app-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--closet);
+}
+
+/* ── User Chip ── */
+.user-chip {
+  position: absolute; top: 20px; left: 0;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--tshirt); border: 1px solid var(--fog);
+  border-radius: 20px; padding: 4px 12px 4px 4px;
+  cursor: pointer; box-shadow: var(--shadow);
+  font-size: 0.8rem; color: var(--closet);
+  transition: box-shadow 0.2s;
+}
+.user-chip:hover { box-shadow: 0 4px 12px rgba(27,40,56,0.12); }
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--rail); color: var(--tshirt);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 600;
+}
+.user-name { max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Main Tabs (Closet Rail) ── */
+.main-tabs {
+  position: relative; display: flex; justify-content: center; gap: 4px;
+  margin-top: 16px; padding-bottom: 12px;
+}
+.tab-rail {
+  position: absolute; bottom: 0; left: 10%; right: 10%;
+  height: 2px; background: var(--rail); opacity: 0.3; border-radius: 1px;
+}
+.main-tab {
+  font-family: var(--font-display);
+  font-size: 0.85rem; font-weight: 500;
+  padding: 8px 14px; border: none; background: none;
+  color: var(--rail); cursor: pointer;
+  transition: color 0.2s;
+  position: relative; z-index: 1;
+}
+.main-tab.active { color: var(--closet); font-weight: 600; }
+.tab-hook {
+  position: absolute; bottom: -2px; left: 0;
+  width: 24px; height: 12px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.tab-hook::before {
+  content: ""; display: block;
+  width: 10px; height: 10px; margin: 0 auto;
+  border: 2.5px solid var(--sunrise);
+  border-radius: 50% 50% 0 0; border-bottom: none;
+}
+.tab-hook::after {
+  content: ""; display: block;
+  width: 2.5px; height: 5px; margin: 0 auto;
+  background: var(--sunrise); border-radius: 0 0 2px 2px;
+}
+
+/* ── Tab Panels ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ── Sub Navigation ── */
+.sub-nav { display: flex; gap: 2px; margin: 16px 0 12px; background: var(--tshirt); border-radius: 8px; padding: 3px; box-shadow: var(--shadow); }
+.sub-tab {
+  flex: 1; padding: 8px; border: none; border-radius: 6px;
+  font-size: 0.82rem; font-weight: 500; cursor: pointer;
+  background: none; color: var(--rail); transition: all 0.2s;
+}
+.sub-tab.active { background: var(--rail); color: var(--tshirt); }
+.sub-panel { display: none; }
+.sub-panel.active { display: block; }
+
+/* ── Buttons ── */
+.btn-primary {
+  display: block; width: 100%; padding: 12px;
+  background: var(--sunrise); color: var(--tshirt);
+  border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+}
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:hover { opacity: 0.9; }
+.btn-secondary {
+  display: inline-block; padding: 10px 16px;
+  background: none; border: 1.5px solid var(--rail);
+  border-radius: 8px; color: var(--rail); font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-secondary:hover { background: var(--rail); color: var(--tshirt); }
+
+/* ── Action Bar ── */
+.action-bar { display: flex; gap: 10px; margin-bottom: 14px; }
+.action-bar .btn-primary { flex: 1; }
+.action-bar .btn-secondary { flex: 1; text-align: center; }
+
+/* ── Category Filter ── */
+.category-filter { margin-bottom: 14px; }
+.cat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.cat-btn, .cat-sub-btn {
+  padding: 5px 12px; border-radius: 14px; border: 1px solid var(--tag);
+  background: var(--tshirt); color: var(--rail); font-size: 0.78rem;
+  cursor: pointer; transition: all 0.15s;
+}
+.cat-btn.active, .cat-sub-btn.active { background: var(--rail); color: var(--tshirt); border-color: var(--rail); }
+
+/* ── Card Grid (Wardrobe) ── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.wardrobe-card {
+  background: var(--tshirt); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); position: relative;
+  border: 1px solid rgba(232,236,241,0.8);
+}
+.wardrobe-card img { width: 100%; height: 130px; object-fit: cover; }
+.wardrobe-card .info { padding: 8px 10px; }
+.wardrobe-card .name { font-size: 0.8rem; font-weight: 600; margin-bottom: 3px; }
+.wardrobe-card .type-tag {
+  display: inline-block; font-size: 0.68rem; padding: 2px 6px;
+  background: var(--tag); color: var(--closet); border-radius: 4px; opacity: 0.8;
+}
+.wardrobe-card .meta-tag { font-size: 0.68rem; color: var(--rail); margin-left: 4px; }
+.btn-del {
+  position: absolute; top: 6px; right: 6px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(27,40,56,0.6); color: #fff; border: none;
+  font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Weather Hero ── */
+.weather-hero {
+  background: linear-gradient(135deg, var(--rail), var(--closet));
+  border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
+  color: var(--tshirt); position: relative; overflow: hidden;
+}
+.weather-hero::after {
+  content: ""; position: absolute; top: -30px; right: -30px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(152,193,217,0.15);
+}
+.wh-status { font-size: 0.82rem; opacity: 0.7; }
+.wh-location { display: flex; align-items: center; gap: 4px; font-size: 0.78rem; opacity: 0.85; margin-bottom: 6px; }
+.wh-main { display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px; }
+.wh-temp { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; }
+.wh-deg { font-size: 1.2rem; opacity: 0.7; }
+.wh-text { font-size: 0.9rem; opacity: 0.85; }
+.wh-meta { display: flex; gap: 8px; }
+.wh-chip {
+  font-size: 0.72rem; padding: 3px 8px; border-radius: 10px;
+  background: rgba(255,255,255,0.12); backdrop-filter: blur(4px);
+}
+
+/* ── Mode Toggle ── */
+.rec-mode-toggle { display: flex; gap: 2px; background: var(--tshirt); border-radius: 8px; padding: 3px; margin-bottom: 8px; box-shadow: var(--shadow); }
+.mode-btn {
+  flex: 1; padding: 8px; border: none; border-radius: 6px;
+  font-size: 0.82rem; font-weight: 500; cursor: pointer;
+  background: none; color: var(--rail); transition: all 0.2s;
+}
+.mode-btn.active { background: var(--sunrise); color: var(--tshirt); }
+.mode-hint { font-size: 0.75rem; color: var(--rail); margin-bottom: 12px; text-align: center; }
+
+/* ── Images Toggle ── */
+.images-toggle-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.images-toggle-label { font-size: 0.82rem; font-weight: 500; }
+.toggle-hint { font-size: 0.72rem; color: var(--rail); opacity: 0.7; }
+.switch { position: relative; width: 40px; height: 22px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider {
+  position: absolute; inset: 0; background: #ccc; border-radius: 22px;
+  cursor: pointer; transition: 0.2s;
+}
+.switch .slider::before {
+  content: ""; position: absolute; width: 16px; height: 16px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.2s;
+}
+.switch input:checked + .slider { background: var(--sunrise); }
+.switch input:checked + .slider::before { transform: translateX(18px); }
+
+/* ── Forms ── */
+.form-row { margin-bottom: 12px; }
+.form-row label { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 4px; color: var(--closet); }
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--fog);
+  border-radius: 8px; font-size: 0.85rem; background: var(--tshirt);
+  color: var(--closet); outline: none; transition: border-color 0.2s;
+  font-family: var(--font-body);
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--rail); }
+.optional { font-weight: 400; color: var(--rail); opacity: 0.6; font-size: 0.72rem; }
+.ob-row { display: flex; gap: 10px; }
+.ob-row .form-row, .ob-row .ob-field { flex: 1; }
+
+/* ── Scope Selector (Online Purchase) ── */
+.scope-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.scope-btn {
+  padding: 6px 14px; border-radius: 16px; border: 1px solid var(--tag);
+  background: var(--tshirt); color: var(--rail); font-size: 0.8rem;
+  cursor: pointer; transition: all 0.15s;
+}
+.scope-btn.active { background: var(--sunrise); color: var(--tshirt); border-color: var(--sunrise); }
+
+/* ── Loading ── */
+.loading { text-align: center; padding: 24px; color: var(--rail); font-size: 0.85rem; }
+.loading-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--sunrise); margin-right: 8px;
+  animation: pulse 1s ease infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 0.4; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+
+/* ── Outfit Cards ── */
+.outfit-card {
+  background: var(--tshirt); border-radius: var(--radius); padding: 16px;
+  margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid rgba(232,236,241,0.8);
+  animation: fadeIn 0.3s ease;
+}
+.outfit-card .summary { font-weight: 600; font-size: 0.88rem; margin-bottom: 8px; }
+.outfit-slots { margin-bottom: 8px; }
+.slot-line { font-size: 0.82rem; padding: 3px 0; display: flex; gap: 6px; }
+.slot-label { color: var(--rail); font-weight: 500; min-width: 36px; }
+.reason { font-size: 0.78rem; color: var(--rail); line-height: 1.5; margin-top: 6px; }
+.formality { display: flex; gap: 3px; margin-top: 6px; }
+.formality-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fog); }
+.formality-dot.filled { background: var(--sunrise); }
+.fallback-tips {
+  background: rgba(238,108,77,0.06); border-left: 3px solid var(--sunrise);
+  padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 0.8rem;
+  color: var(--closet); margin-top: 12px;
+}
+
+/* ── Outfit Images (配图集) ── */
+.outfit-images { margin-top: 10px; }
+.images-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.outfit-img-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+.outfit-img-item figcaption { font-size: 0.65rem; color: var(--rail); text-align: center; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.images-loading { font-size: 0.75rem; color: var(--rail); animation: pulse 1.4s ease infinite; }
+.images-empty { font-size: 0.75rem; color: var(--rail); opacity: 0.6; }
+
+/* ── Product Cards (Online Purchase) ── */
+.purchase-summary { font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; }
+.plan-card {
+  background: var(--tshirt); border-radius: var(--radius); padding: 14px;
+  margin-bottom: 10px; box-shadow: var(--shadow);
+}
+.plan-card .plan-cat { font-size: 0.72rem; color: var(--sunrise); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+.plan-card .plan-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; }
+.plan-card .plan-desc { font-size: 0.78rem; color: var(--rail); line-height: 1.5; margin-bottom: 4px; }
+.plan-card .plan-role { font-size: 0.75rem; color: var(--tag); }
+.product-card {
+  display: flex; gap: 10px; background: var(--tshirt); border-radius: var(--radius);
+  padding: 10px; margin-bottom: 8px; box-shadow: var(--shadow);
+  border: 1px solid rgba(232,236,241,0.8);
+}
+.product-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.product-info { flex: 1; min-width: 0; }
+.product-name { font-size: 0.78rem; font-weight: 500; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.product-price { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--sunrise); }
+.product-price .original { font-size: 0.72rem; color: var(--rail); text-decoration: line-through; margin-left: 6px; font-weight: 400; }
+.product-meta { font-size: 0.7rem; color: var(--rail); margin-top: 3px; }
+.product-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+.product-tags span { font-size: 0.65rem; padding: 1px 5px; background: var(--fog); border-radius: 3px; color: var(--rail); }
+.category-section-title { font-size: 0.82rem; font-weight: 600; color: var(--rail); margin: 14px 0 8px; padding-left: 2px; }
+
+/* ── Offline Shopping Results ── */
+.chat-bubble { display: flex; gap: 10px; margin-bottom: 16px; }
+.chat-avatar {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: var(--rail); color: var(--tshirt);
+  display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+}
+.chat-text {
+  background: var(--tshirt); border-radius: 2px 12px 12px 12px;
+  padding: 12px 14px; font-size: 0.82rem; line-height: 1.6;
+  box-shadow: var(--shadow);
+}
+.shopping-section-title { font-size: 0.82rem; font-weight: 600; color: var(--sunrise); margin: 14px 0 8px; }
+.shopping-item-card {
+  background: var(--tshirt); border-radius: var(--radius); padding: 12px;
+  margin-bottom: 8px; box-shadow: var(--shadow);
+}
+.shopping-item-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; }
+.shopping-item-reason { font-size: 0.78rem; color: var(--rail); margin-bottom: 4px; }
+.shopping-item-tips { font-size: 0.75rem; background: rgba(152,193,217,0.1); padding: 6px 8px; border-radius: 6px; color: var(--closet); }
+.store-card {
+  background: var(--tshirt); border-radius: var(--radius); padding: 12px;
+  margin-bottom: 8px; box-shadow: var(--shadow); border-left: 3px solid var(--tag);
+}
+.store-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 3px; }
+.store-address { font-size: 0.75rem; color: var(--rail); margin-bottom: 3px; }
+.store-meta { font-size: 0.72rem; color: var(--rail); }
+.store-rating { color: #d4a017; font-weight: 600; }
+.store-empty { font-size: 0.8rem; color: var(--rail); opacity: 0.7; text-align: center; padding: 16px; }
+
+/* ── Knowledge Placeholder ── */
+.knowledge-placeholder {
+  text-align: center; padding: 80px 20px; color: var(--rail); opacity: 0.6;
+}
+.knowledge-placeholder svg { margin-bottom: 16px; }
+.knowledge-placeholder h3 { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 8px; color: var(--closet); opacity: 0.7; }
+.knowledge-placeholder p { font-size: 0.85rem; }
+
+/* ── Modals ── */
+.modal {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(27,40,56,0.5); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal.hidden { display: none; }
+.modal-body {
+  background: var(--tshirt); border-radius: 16px; padding: 20px;
+  width: 100%; max-width: 400px; max-height: 85dvh; overflow-y: auto;
+}
+.modal-body video { width: 100%; border-radius: 8px; margin-bottom: 12px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 14px; }
+.modal-actions .btn-primary { flex: 1; }
+.modal-actions .btn-secondary { flex: 1; text-align: center; }
+
+/* ── Recognize Modal ── */
+.recognize-modal-body h3 { font-family: var(--font-display); font-size: 1rem; margin-bottom: 12px; }
+.recognize-preview { text-align: center; margin-bottom: 12px; }
+.recognize-preview img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
+.recognize-form { display: flex; flex-direction: column; gap: 8px; }
+
+/* ── User Modal ── */
+.user-modal-body h3 { font-family: var(--font-display); font-size: 1rem; margin-bottom: 10px; }
+.user-modal-hint { font-size: 0.75rem; color: var(--rail); margin-bottom: 10px; }
+.user-list { margin-bottom: 12px; }
+.user-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px;
+  border-radius: 8px; cursor: pointer; transition: background 0.15s;
+  border: 1px solid transparent;
+}
+.user-row:hover { background: var(--fog); }
+.user-row.active { border-color: var(--tag); background: rgba(152,193,217,0.08); }
+.user-row .user-avatar { width: 32px; height: 32px; font-size: 0.8rem; }
+.user-info { flex: 1; }
+.uname { font-size: 0.85rem; font-weight: 600; }
+.usummary { font-size: 0.72rem; color: var(--rail); }
+.user-active-badge { font-size: 0.65rem; color: var(--sunrise); font-weight: 600; }
+.row-actions { display: flex; gap: 6px; }
+.row-btn { border: none; background: none; cursor: pointer; font-size: 0.85rem; padding: 4px; opacity: 0.6; }
+.row-btn:hover { opacity: 1; }
+.user-add-btn { width: 100%; text-align: center; margin-top: 8px; }
+.user-modal-close { width: 100%; text-align: center; margin-top: 12px; }
+
+/* ── Onboarding ── */
+.onboarding {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--closet);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.onboarding.hidden { display: none; }
+.onboarding-card {
+  background: var(--tshirt); border-radius: 20px; padding: 32px 24px;
+  width: 100%; max-width: 380px; text-align: center;
+}
+.onboarding-icon { color: var(--rail); margin-bottom: 12px; }
+.onboarding-card h2 { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 6px; }
+.onboarding-hint { font-size: 0.82rem; color: var(--rail); margin-bottom: 20px; }
+.ob-field { margin-bottom: 12px; text-align: left; }
+.ob-field label { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 4px; }
+.ob-field.required label::after { content: " *"; color: var(--sunrise); }
+.ob-field input, .ob-field select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--fog);
+  border-radius: 8px; font-size: 0.85rem; background: var(--tshirt); outline: none;
+}
+.ob-field input:focus, .ob-field select:focus { border-color: var(--rail); }
+.ob-submit { margin-top: 8px; }
+
+/* ── Utilities ── */
+.hidden { display: none !important; }
+.empty-hint { text-align: center; padding: 32px; color: var(--rail); font-size: 0.85rem; opacity: 0.7; }
+.form-row.required label::after { content: " *"; color: var(--sunrise); }

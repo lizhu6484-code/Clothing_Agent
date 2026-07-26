@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# 环境变量（含真实 API Key，切勿提交）
+.env
+
+# 数据库与运行时数据
+*.db
+*.sqlite3
+*.db-journal
+backend/uploads/
+backend/output/
+
+# 日志
+*.log
+backend.err.log
+frontend.err.log
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统
+.DS_Store
+Thumbs.db
