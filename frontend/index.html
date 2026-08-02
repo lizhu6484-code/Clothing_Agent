@@ -2,9 +2,10 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>穿搭 Agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -56,195 +57,255 @@
   </div>
 </div>
 
-<!-- ═══ Header ═══ -->
-<header>
-  <button id="user-chip" class="user-chip">
-    <span id="user-avatar" class="user-avatar">?</span>
-    <span id="user-chip-name" class="user-name">未设置</span>
-  </button>
-  <h1 class="app-title">穿搭 Agent</h1>
-  <nav class="main-tabs" id="main-tabs">
-    <div class="tab-rail"></div>
-    <button class="main-tab active" data-tab="outfit">穿搭推荐</button>
-    <button class="main-tab" data-tab="purchase">购衣推荐</button>
-    <button class="main-tab" data-tab="knowledge">知识卡片</button>
-    <div class="tab-hook" id="tab-hook"></div>
-  </nav>
-</header>
+<!-- ═══ App Shell ═══ -->
+<div class="app-shell">
 
-<!-- ═══ Main Content ═══ -->
-<main>
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <button id="menu-toggle" class="menu-toggle" aria-label="菜单">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <h1 class="app-title">穿搭 Agent</h1>
+    <button id="user-chip" class="user-chip">
+      <span id="user-avatar" class="user-avatar">?</span>
+      <span id="user-chip-name" class="user-name">未设置</span>
+    </button>
+  </header>
 
-  <!-- ── Tab 1: 穿搭推荐 ── -->
-  <section id="tab-outfit" class="tab-panel active">
-    <div class="sub-nav">
-      <button class="sub-tab active" data-panel="wardrobe">衣橱</button>
-      <button class="sub-tab" data-panel="recommend">推荐</button>
-    </div>
+  <!-- 侧栏遮罩（手机） -->
+  <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
 
-    <!-- Panel: 衣橱 -->
-    <div id="panel-wardrobe" class="sub-panel active">
-      <div class="action-bar">
-        <button id="btn-camera" class="btn-primary">拍照识别</button>
-        <label class="btn-secondary">相册选择<input type="file" id="file-input" accept="image/*" hidden></label>
-      </div>
-      <div class="category-filter">
-        <div id="category-main" class="cat-row">
-          <button class="cat-btn active" data-type="">全部</button>
-          <button class="cat-btn" data-type="上衣">上衣</button>
-          <button class="cat-btn" data-type="下装">下装</button>
-          <button class="cat-btn" data-type="鞋子">鞋子</button>
-        </div>
-        <div id="category-sub" class="cat-row hidden"></div>
-      </div>
-      <div id="upload-loading" class="loading hidden"><span class="loading-dot"></span>识别中...</div>
-      <div id="wardrobe-list" class="card-grid"></div>
-      <p id="wardrobe-empty" class="empty-hint hidden">衣橱还是空的，拍件衣服试试</p>
-    </div>
+  <div class="body-wrap">
 
-    <!-- Panel: 推荐 -->
-    <div id="panel-recommend" class="sub-panel">
-      <div id="weather-hero" class="weather-hero">
-        <div id="weather-hero-status" class="wh-status">定位中...</div>
-        <div id="weather-hero-content" class="wh-content hidden">
-          <div class="wh-location">
-            <svg class="wh-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span id="wh-location-text"></span>
-          </div>
-          <div class="wh-main">
-            <span id="wh-temp" class="wh-temp">--</span><span class="wh-deg">℃</span>
-            <span id="wh-text" class="wh-text"></span>
-          </div>
-          <div class="wh-meta">
-            <span class="wh-chip" id="wh-humidity"></span>
-            <span class="wh-chip" id="wh-wind"></span>
+    <!-- 左侧导航 -->
+    <aside id="sidebar" class="sidebar">
+      <nav class="nav-tree">
+        <button class="nav-item active" data-view="wardrobe">
+          <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.37l.58 2.48a2 2 0 0 0 2 1.54l1.66-.01V20a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9.84l1.66.01a2 2 0 0 0 2-1.54l.58-2.48a2 2 0 0 0-1.34-2.37z"/></svg>
+          <span>衣橱</span>
+        </button>
+        <button class="nav-item" data-view="recommend">
+          <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>今日穿搭</span>
+        </button>
+        <div class="nav-group" data-group="purchase">
+          <button class="nav-item" data-view="purchase">
+            <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>购衣推荐</span>
+            <svg class="nav-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="nav-sub">
+            <button class="nav-sub-item" data-panel="online">线上</button>
+            <button class="nav-sub-item" data-panel="offline">线下</button>
           </div>
         </div>
-      </div>
+      </nav>
+      <div class="sidebar-footer">v2.0 · Morning Fog</div>
+    </aside>
 
-      <div class="rec-mode-toggle">
-        <button class="mode-btn active" data-mode="wardrobe">衣柜推荐</button>
-        <button class="mode-btn" data-mode="free">自由推荐</button>
-      </div>
-      <p id="mode-hint" class="mode-hint">从你的衣橱中搭配</p>
+    <!-- 主内容区 -->
+    <main class="content">
 
-      <div class="images-toggle-row">
-        <label class="switch"><input type="checkbox" id="images-toggle"><span class="slider"></span></label>
-        <span class="images-toggle-label">配图集</span>
-        <span class="toggle-hint">为推荐搜索实物图</span>
-      </div>
+      <!-- ── View: 衣橱 ── -->
+      <section id="tab-wardrobe" class="view active">
+          <div class="page-head">
+            <h2 class="page-title">衣橱</h2>
+            <div class="action-bar">
+              <button id="btn-camera" class="action-icon-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span>拍照识别</span>
+              </button>
+              <label class="action-icon-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>相册选择</span>
+                <input type="file" id="file-input" accept="image/*" hidden>
+              </label>
+            </div>
+          </div>
+          <div class="category-filter">
+            <div id="category-main" class="seg-group">
+              <button class="seg active" data-type="">全部</button>
+              <button class="seg" data-type="上衣">上衣</button>
+              <button class="seg" data-type="下装">下装</button>
+              <button class="seg" data-type="鞋子">鞋子</button>
+            </div>
+            <div id="category-sub" class="chip-row hidden"></div>
+          </div>
+          <div id="upload-loading" class="loading hidden"><span class="loading-dot"></span>识别中...</div>
+          <div id="wardrobe-list" class="card-grid"></div>
+          <p id="wardrobe-empty" class="empty-hint hidden">衣橱还是空的，拍件衣服试试</p>
+      </section>
 
-      <form id="recommend-form">
-        <div class="form-row">
-          <label>场景</label>
-          <select id="rec-occasion">
-            <option value="日常通勤">日常通勤</option>
-            <option value="约会">约会</option>
-            <option value="商务会议">商务会议</option>
-            <option value="户外运动">户外运动</option>
-            <option value="旅行">旅行</option>
-            <option value="其他">其他</option>
-          </select>
-          <input type="text" id="rec-occasion-custom" class="hidden" placeholder="输入场景">
-        </div>
-        <div class="form-row">
-          <label>目的 <span class="optional">选填</span></label>
-          <textarea id="rec-purpose" rows="2" placeholder="今天有什么安排？"></textarea>
-        </div>
-        <div class="form-row">
-          <label>偏好 <span class="optional">选填</span></label>
-          <input type="text" id="rec-preferences" placeholder="如：想穿得休闲一点">
-        </div>
-        <button type="submit" class="btn-primary">获取推荐</button>
-      </form>
-      <div id="recommend-loading" class="loading hidden"><span class="loading-dot"></span>搭配中...</div>
-      <div id="recommend-result"></div>
-    </div>
-  </section>
+      <!-- ── View: 今日穿搭 ── -->
+      <section id="tab-recommend" class="view">
+          <div id="weather-hero" class="weather-hero">
+            <div id="weather-hero-status" class="wh-status">定位中...</div>
+            <div id="weather-hero-content" class="wh-content hidden">
+              <div class="wh-location">
+                <svg class="wh-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span id="wh-location-text"></span>
+              </div>
+              <div class="wh-main">
+                <span id="wh-temp" class="wh-temp">--</span><span class="wh-deg">℃</span>
+                <span id="wh-text" class="wh-text"></span>
+              </div>
+              <div class="wh-meta">
+                <span class="wh-chip" id="wh-humidity"></span>
+                <span class="wh-chip" id="wh-wind"></span>
+              </div>
+            </div>
+          </div>
 
-  <!-- ── Tab 2: 购衣推荐 ── -->
-  <section id="tab-purchase" class="tab-panel">
-    <div class="sub-nav">
-      <button class="sub-tab active" data-panel="online">线上</button>
-      <button class="sub-tab" data-panel="offline">线下</button>
-    </div>
+          <div class="rec-toolbar">
+            <div class="seg-group rec-mode-toggle">
+              <button class="mode-btn seg active" data-mode="wardrobe">衣柜推荐</button>
+              <button class="mode-btn seg" data-mode="free">自由推荐</button>
+            </div>
+            <label class="switch"><input type="checkbox" id="images-toggle"><span class="slider"></span></label>
+            <span class="switch-label">配图集</span>
+          </div>
+          <p id="mode-hint" class="mode-hint">从你的衣橱中搭配</p>
 
-    <!-- Panel: 线上购衣 -->
-    <div id="panel-online" class="sub-panel active">
-      <div class="scope-selector">
-        <button class="scope-btn active" data-scope="full">全套</button>
-        <button class="scope-btn" data-scope="top_bottom">上衣+下装</button>
-        <button class="scope-btn" data-scope="top">上衣</button>
-        <button class="scope-btn" data-scope="bottom">下装</button>
-        <button class="scope-btn" data-scope="shoes">鞋子</button>
-      </div>
-      <form id="online-form">
-        <div class="form-row">
-          <label>场景 <span class="optional">选填</span></label>
-          <input type="text" id="ol-scene" placeholder="如：约会、通勤、运动">
-        </div>
-        <div class="form-row">
-          <label>风格 <span class="optional">选填</span></label>
-          <input type="text" id="ol-style" placeholder="如：日系、简约、复古">
-        </div>
-        <div class="form-row">
-          <label>预算 (元) <span class="optional">选填</span></label>
-          <input type="number" id="ol-budget" min="1" placeholder="总预算">
-        </div>
-        <div class="form-row">
-          <label>其他 <span class="optional">选填</span></label>
-          <textarea id="ol-other" rows="2" placeholder="其他需求或限制"></textarea>
-        </div>
-        <button type="submit" class="btn-primary">搜索推荐</button>
-      </form>
-      <div id="online-loading" class="loading hidden"><span class="loading-dot"></span>搜索中...</div>
-      <div id="online-result"></div>
-    </div>
+          <div class="split-layout">
+            <aside class="split-side">
+              <form id="recommend-form">
+                <div class="form-row">
+                  <label>场景</label>
+                  <select id="rec-occasion">
+                    <option value="日常通勤">日常通勤</option>
+                    <option value="约会">约会</option>
+                    <option value="商务会议">商务会议</option>
+                    <option value="户外运动">户外运动</option>
+                    <option value="旅行">旅行</option>
+                    <option value="其他">其他</option>
+                  </select>
+                  <input type="text" id="rec-occasion-custom" class="hidden" placeholder="输入场景">
+                </div>
+                <div class="form-row">
+                  <label>目的 <span class="optional">选填</span></label>
+                  <textarea id="rec-purpose" rows="2" placeholder="今天有什么安排？"></textarea>
+                </div>
+                <div class="form-row">
+                  <label>偏好 <span class="optional">选填</span></label>
+                  <input type="text" id="rec-preferences" placeholder="如：想穿得休闲一点">
+                </div>
+                <button type="submit" class="btn-primary">获取推荐</button>
+              </form>
+            </aside>
+            <div class="split-main">
+              <div id="recommend-loading" class="loading hidden"><span class="loading-dot"></span>搭配中...</div>
+              <div id="recommend-result" class="result-stack"></div>
+            </div>
+          </div>
+      </section>
 
-    <!-- Panel: 线下购衣 -->
-    <div id="panel-offline" class="sub-panel">
-      <form id="offline-form">
-        <div class="form-row">
-          <label>想买什么 <span class="optional">选填</span></label>
-          <textarea id="off-need" rows="2" placeholder="如：想买件夏天穿的薄外套"></textarea>
-        </div>
-        <div class="form-row">
-          <label>场景</label>
-          <select id="off-occasion">
-            <option value="日常通勤">日常通勤</option>
-            <option value="约会">约会</option>
-            <option value="商务会议">商务会议</option>
-            <option value="户外运动">户外运动</option>
-            <option value="旅行">旅行</option>
-            <option value="其他">其他</option>
-          </select>
-          <input type="text" id="off-occasion-custom" class="hidden" placeholder="输入场景">
-        </div>
-        <div class="form-row">
-          <label>预算 <span class="optional">选填</span></label>
-          <input type="text" id="off-budget" placeholder="如：500以内">
-        </div>
-        <div class="form-row">
-          <label>偏好 <span class="optional">选填</span></label>
-          <input type="text" id="off-preferences" placeholder="如：喜欢简约风">
-        </div>
-        <button type="submit" class="btn-primary">获取建议</button>
-      </form>
-      <div id="offline-loading" class="loading hidden"><span class="loading-dot"></span>规划中...</div>
-      <div id="offline-result"></div>
-    </div>
-  </section>
+      <!-- ── View: 购衣推荐 ── -->
+      <section id="tab-purchase" class="view">
 
-  <!-- ── Tab 3: 知识卡片 ── -->
-  <section id="tab-knowledge" class="tab-panel">
-    <div class="knowledge-placeholder">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-      <h3>知识卡片</h3>
-      <p>真人搭配灵感，即将上线</p>
-    </div>
-  </section>
+        <!-- Sub: 线上 -->
+        <div id="panel-online" class="subview active">
+          <div class="page-head">
+            <h2 class="page-title">线上购衣</h2>
+          </div>
+          <div class="scope-selector seg-group">
+            <button type="button" class="scope-btn seg active" data-scope="full">全套</button>
+            <button type="button" class="scope-btn seg" data-scope="top_bottom">上衣+下装</button>
+            <button type="button" class="scope-btn seg" data-scope="top">上衣</button>
+            <button type="button" class="scope-btn seg" data-scope="bottom">下装</button>
+            <button type="button" class="scope-btn seg" data-scope="shoes">鞋子</button>
+          </div>
+          <div class="split-layout">
+            <aside class="split-side">
+              <form id="online-form">
+                <div class="form-row">
+                  <label>场景 <span class="optional">选填</span></label>
+                  <input type="text" id="ol-scene" placeholder="如：约会、通勤、运动">
+                </div>
+                <div class="form-row">
+                  <label>风格 <span class="optional">选填</span></label>
+                  <input type="text" id="ol-style" placeholder="如：日系、简约、复古">
+                </div>
+                <div class="form-row">
+                  <label>预算 (元) <span class="optional">选填</span></label>
+                  <div class="budget-mode-toggle seg-group">
+                    <button type="button" class="budget-mode-btn seg active" data-mode="average">平均分配</button>
+                    <button type="button" class="budget-mode-btn seg" data-mode="custom">自行分配</button>
+                  </div>
+                  <input type="number" id="ol-budget" min="1" placeholder="总预算">
+                  <div id="ol-budget-custom" class="budget-custom hidden">
+                    <input type="number" id="ol-budget-top" min="1" placeholder="上衣预算">
+                    <input type="number" id="ol-budget-bottom" min="1" placeholder="下装预算">
+                    <input type="number" id="ol-budget-shoes" min="1" placeholder="鞋子预算">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <label>其他 <span class="optional">选填</span></label>
+                  <textarea id="ol-other" rows="2" placeholder="其他需求或限制"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">搜索推荐</button>
+              </form>
+            </aside>
+            <div class="split-main">
+              <div id="online-loading" class="loading hidden"><span class="loading-dot"></span>搜索中...</div>
+              <div id="online-result" class="result-stack"></div>
+            </div>
+          </div>
+        </div>
 
-</main>
+        <!-- Sub: 线下 -->
+        <div id="panel-offline" class="subview">
+          <div class="page-head">
+            <h2 class="page-title">线下购衣</h2>
+          </div>
+          <div class="scope-selector seg-group">
+            <button type="button" class="scope-btn seg active" data-scope="full">全套</button>
+            <button type="button" class="scope-btn seg" data-scope="top_bottom">上衣+下装</button>
+            <button type="button" class="scope-btn seg" data-scope="top">上衣</button>
+            <button type="button" class="scope-btn seg" data-scope="bottom">下装</button>
+            <button type="button" class="scope-btn seg" data-scope="shoes">鞋子</button>
+          </div>
+          <div class="split-layout">
+            <aside class="split-side">
+              <form id="offline-form">
+                <div class="form-row">
+                  <label>场景 <span class="optional">选填</span></label>
+                  <input type="text" id="off-occasion" placeholder="如：约会、通勤、运动">
+                </div>
+                <div class="form-row">
+                  <label>风格 <span class="optional">选填</span></label>
+                  <input type="text" id="off-preferences" placeholder="如：日系、简约、复古">
+                </div>
+                <div class="form-row">
+                  <label>预算 (元) <span class="optional">选填</span></label>
+                  <div class="budget-mode-toggle seg-group">
+                    <button type="button" class="budget-mode-btn seg active" data-mode="average">平均分配</button>
+                    <button type="button" class="budget-mode-btn seg" data-mode="custom">自行分配</button>
+                  </div>
+                  <input type="text" id="off-budget" placeholder="总预算">
+                  <div id="off-budget-custom" class="budget-custom hidden">
+                    <input type="text" id="off-budget-top" placeholder="上衣预算">
+                    <input type="text" id="off-budget-bottom" placeholder="下装预算">
+                    <input type="text" id="off-budget-shoes" placeholder="鞋子预算">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <label>其他 <span class="optional">选填</span></label>
+                  <textarea id="off-need" rows="2" placeholder="其他需求或限制"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">获取建议</button>
+              </form>
+            </aside>
+            <div class="split-main">
+              <div id="offline-loading" class="loading hidden"><span class="loading-dot"></span>规划中...</div>
+              <div id="offline-result" class="result-stack"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
 
 <!-- ═══ Camera Modal ═══ -->
 <div id="camera-modal" class="modal hidden">

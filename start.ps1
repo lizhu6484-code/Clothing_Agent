@@ -26,8 +26,8 @@ Write-Host ""
 # 启动后端
 $backendProc = Start-Process -FilePath $python -ArgumentList "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8080" -WorkingDirectory $backendDir -WindowStyle Hidden -PassThru
 
-# 启动前端
-$frontendProc = Start-Process -FilePath $python -ArgumentList "-m", "http.server", "3030" -WorkingDirectory $frontendDir -WindowStyle Hidden -PassThru
+# 启动前端（serve.py 带 no-store 头，避免缓存）
+$frontendProc = Start-Process -FilePath $python -ArgumentList "serve.py", "3030" -WorkingDirectory $frontendDir -WindowStyle Hidden -PassThru
 
 Write-Host "[OK] 已启动，按任意键停止..." -ForegroundColor Green
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

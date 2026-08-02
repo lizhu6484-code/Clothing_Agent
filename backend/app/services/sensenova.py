@@ -1,4 +1,5 @@
 import base64
+import json
 
 from openai import OpenAI
 
@@ -62,7 +63,5 @@ def recognize_clothing(image_bytes: bytes) -> dict:
         )
     except Exception as e:
         raise VLMUnavailableError(f"VLM request failed: {e}") from e
-
-    import json
 
     return json.loads(resp.choices[0].message.content)

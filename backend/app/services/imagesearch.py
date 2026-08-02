@@ -6,12 +6,15 @@ import re
 import shutil
 import sys
 import time
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from PIL import Image
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
 GREP_DIR = BASE_DIR / "grep"
@@ -59,7 +62,7 @@ def _fetch_once(cleaned: str) -> str | None:
     try:
         src_path = get_material_image_path_a(cleaned)
     except Exception as e:
-        print(f"[imagesearch] 搜索 '{cleaned}' 异常: {e}")
+        logger.warning("搜索 '%s' 异常: %s", cleaned, e)
         return None
 
     if not src_path or not os.path.exists(src_path):

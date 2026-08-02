@@ -27,7 +27,6 @@ def get_location_name(lat: float, lon: float) -> str:
             url,
             params={"location": query, "number": 1},
             headers={"X-QW-Api-Key": settings.QWEATHER_API_KEY},
-            verify=False,
             timeout=10,
         )
         resp.raise_for_status()
@@ -56,7 +55,7 @@ def get_weather(lat: float, lon: float) -> Weather:
     query = f"{lon:.2f},{lat:.2f}"
     url = f"{settings.QWEATHER_BASE_URL}/v7/weather/now"
     try:
-        resp = httpx.get(url, params={"location": query}, headers={"X-QW-Api-Key": settings.QWEATHER_API_KEY}, verify=False, timeout=10)
+        resp = httpx.get(url, params={"location": query}, headers={"X-QW-Api-Key": settings.QWEATHER_API_KEY}, timeout=10)
         resp.raise_for_status()
         data = resp.json()
     except Exception as e:

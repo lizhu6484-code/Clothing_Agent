@@ -4,10 +4,13 @@ from datetime import date
 from pathlib import Path
 
 ALLOWED_EXT = {"jpg", "jpeg", "png", "webp"}
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 UPLOAD_ROOT = Path(__file__).resolve().parent.parent.parent / "uploads"
 
 
 def save_wardrobe_image(file_bytes: bytes, user_id: int, ext: str) -> tuple[str, str]:
+    if len(file_bytes) > MAX_UPLOAD_BYTES:
+        raise ValueError(f"File too large: {len(file_bytes)} bytes (max {MAX_UPLOAD_BYTES})")
     ext = ext.lower().lstrip(".")
     if ext not in ALLOWED_EXT:
         raise ValueError(f"Unsupported extension: {ext}")

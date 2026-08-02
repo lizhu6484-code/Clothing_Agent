@@ -1,4 +1,4 @@
-/* ═══ 穿搭 Agent — Unified Frontend ═══ */
+/* ═══ 穿搭 Agent — Dashboard v2 ═══ */
 (function () {
 "use strict";
 
@@ -17,6 +17,7 @@ let allUsers = [];
 let wardrobeItems = [];
 let filterType = "", filterCategory = "";
 let onlineScope = "full";
+let offlineScope = "full";
 
 const CATEGORY_MAP = {
   "上衣": ["短袖", "衬衫", "卫衣", "毛衣", "外套"],
@@ -26,8 +27,7 @@ const CATEGORY_MAP = {
 
 // ── Init ──
 document.addEventListener("DOMContentLoaded", async () => {
-  initMainTabs();
-  initSubTabs();
+  initSidebarNav();
   await checkOnboarding();
   initUserChip();
   initWardrobe();
@@ -78,46 +78,79 @@ function initOnboardingForm() {
   });
 }
 
-// ═══ Main Tabs (with hook animation) ═══
-function initMainTabs() {
-  const tabs = document.querySelectorAll(".main-tab");
-  const hook = document.getElementById("tab-hook");
-
-  function moveHook(btn) {
-    const rect = btn.getBoundingClientRect();
-    const parentRect = btn.parentElement.getBoundingClientRect();
-    const x = rect.left - parentRect.left + rect.width / 2 - 12;
-    hook.style.transform = `translateX(${x}px)`;
-  }
-
-  tabs.forEach(btn => {
+// ═══ Sidebar Navigation ═══
+function initSidebarNav() {
+  // 衣橱 / 今日穿搭：直接切换视图
+  document.querySelectorAll(".nav-item[data-view]").forEach(btn => {
     btn.addEventListener("click", () => {
-      tabs.forEach(b => b.classList.remove("active"));
+      const view = btn.dataset.view;
+      // 购衣推荐：toggle 子项展开/收缩
+      if (view === "purchase") {
+        const group = btn.closest(".nav-group");
+        group.classList.toggle("expanded");
+        // 同时切换到购衣视图
+        document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+        document.getElementById("tab-purchase").classList.add("active");
+        // 确保至少一个子项 active
+        if (!group.querySelector(".nav-sub-item.active")) {
+          const first = group.querySelector(".nav-sub-item");
+          if (first) { first.classList.add("active"); activateSubview(first.dataset.panel); }
+        }
+        return;
+      }
+      // 衣橱 / 今日穿搭：直接切换
+      document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-      document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
-      moveHook(btn);
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.getElementById(`tab-${view}`).classList.add("active");
+      // 收缩购衣推荐子项
+      document.querySelectorAll(".nav-group.expanded").forEach(g => g.classList.remove("expanded"));
+      closeSidebarMobile();
     });
   });
 
-  // Initial hook position
-  requestAnimationFrame(() => moveHook(document.querySelector(".main-tab.active")));
+  // 子项（线上/线下）：切换 subview
+  document.querySelectorAll(".nav-sub-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const group = btn.closest(".nav-group");
+      const parentItem = group.querySelector(".nav-item");
+      if (!parentItem.classList.contains("active")) {
+        document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+        parentItem.classList.add("active");
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+        document.getElementById(`tab-${parentItem.dataset.view}`).classList.add("active");
+      }
+      document.querySelectorAll(".nav-sub-item").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activateSubview(btn.dataset.panel);
+      closeSidebarMobile();
+    });
+  });
+
+  document.getElementById("menu-toggle").addEventListener("click", toggleSidebarMobile);
+  document.getElementById("sidebar-overlay").addEventListener("click", closeSidebarMobile);
 }
 
-// ═══ Sub Tabs ═══
-function initSubTabs() {
-  document.querySelectorAll(".sub-nav").forEach(nav => {
-    const btns = nav.querySelectorAll(".sub-tab");
-    btns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        btns.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const section = nav.parentElement;
-        section.querySelectorAll(".sub-panel").forEach(p => p.classList.remove("active"));
-        section.querySelector(`#panel-${btn.dataset.panel}`).classList.add("active");
-      });
-    });
-  });
+function activateSubview(panel) {
+  const activeView = document.querySelector(".view.active");
+  if (!activeView) return;
+  activeView.querySelectorAll(".subview").forEach(s => s.classList.remove("active"));
+  const target = activeView.querySelector(`#panel-${panel}`);
+  if (target) target.classList.add("active");
+}
+
+function toggleSidebarMobile() {
+  const sb = document.getElementById("sidebar");
+  const ov = document.getElementById("sidebar-overlay");
+  sb.classList.toggle("open");
+  ov.classList.toggle("hidden", !sb.classList.contains("open"));
+}
+
+function closeSidebarMobile() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebar-overlay").classList.add("hidden");
 }
 
 // ═══ User Chip + Modal ═══
@@ -285,9 +318,9 @@ function initWardrobe() {
 }
 
 function initCategoryFilter() {
-  document.querySelectorAll("#category-main .cat-btn").forEach(btn => {
+  document.querySelectorAll("#category-main .seg").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll("#category-main .cat-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll("#category-main .seg").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       filterType = btn.dataset.type;
       filterCategory = "";
@@ -301,11 +334,11 @@ function renderSubFilter() {
   const subEl = document.getElementById("category-sub");
   if (!filterType || !CATEGORY_MAP[filterType]) { subEl.classList.add("hidden"); return; }
   subEl.classList.remove("hidden");
-  subEl.innerHTML = CATEGORY_MAP[filterType].map(c => `<button class="cat-sub-btn" data-cat="${c}">${c}</button>`).join("");
-  subEl.querySelectorAll(".cat-sub-btn").forEach(btn => {
+  subEl.innerHTML = CATEGORY_MAP[filterType].map(c => `<button class="chip" data-cat="${c}">${c}</button>`).join("");
+  subEl.querySelectorAll(".chip").forEach(btn => {
     btn.addEventListener("click", () => {
       const wasActive = btn.classList.contains("active");
-      subEl.querySelectorAll(".cat-sub-btn").forEach(b => b.classList.remove("active"));
+      subEl.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
       if (!wasActive) { btn.classList.add("active"); filterCategory = btn.dataset.cat; }
       else { filterCategory = ""; }
       renderWardrobeList();
@@ -550,27 +583,60 @@ async function loadOutfitImages(keywords, index) {
 
 // ═══ Online Purchase ═══
 function initOnlinePurchase() {
-  document.querySelectorAll(".scope-btn").forEach(btn => {
+  const scopeButtons = document.querySelectorAll("#panel-online .scope-btn.seg");
+
+  function updateOnlineBudgetVisibility() {
+    const isCustom = document.querySelector("#panel-online .budget-mode-btn.active")?.dataset.mode === "custom";
+    const topEl = document.getElementById("ol-budget-top");
+    const bottomEl = document.getElementById("ol-budget-bottom");
+    const shoesEl = document.getElementById("ol-budget-shoes");
+    if (topEl) topEl.style.display = (isCustom && (onlineScope === "full" || onlineScope === "top_bottom" || onlineScope === "top")) ? "" : "none";
+    if (bottomEl) bottomEl.style.display = (isCustom && (onlineScope === "full" || onlineScope === "top_bottom" || onlineScope === "bottom")) ? "" : "none";
+    if (shoesEl) shoesEl.style.display = (isCustom && (onlineScope === "full" || onlineScope === "shoes")) ? "" : "none";
+  }
+
+  scopeButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".scope-btn").forEach(b => b.classList.remove("active"));
+      scopeButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       onlineScope = btn.dataset.scope;
+      updateOnlineBudgetVisibility();
     });
   });
+
+  document.querySelectorAll("#panel-online .budget-mode-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#panel-online .budget-mode-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const custom = btn.dataset.mode === "custom";
+      document.getElementById("ol-budget-custom").classList.toggle("hidden", !custom);
+      document.getElementById("ol-budget").classList.toggle("hidden", custom);
+      updateOnlineBudgetVisibility();
+    });
+  });
+
   document.getElementById("online-form").addEventListener("submit", (e) => { e.preventDefault(); submitOnline(); });
 }
 
 async function submitOnline() {
+  const budgetMode = document.querySelector("#panel-online .budget-mode-btn.active")?.dataset.mode || "average";
   const body = {
     purchase_scope: onlineScope,
     scene: document.getElementById("ol-scene").value.trim(),
     style: document.getElementById("ol-style").value.trim(),
-    budget: document.getElementById("ol-budget").value ? parseFloat(document.getElementById("ol-budget").value) : null,
     other: document.getElementById("ol-other").value.trim(),
+    budget_mode: budgetMode,
   };
 
-  // Validate at least one field
-  if (!body.scene && !body.style && !body.budget && !body.other) { alert("请至少填写一项需求"); return; }
+  if (budgetMode === "average") {
+    body.budget = document.getElementById("ol-budget").value ? parseFloat(document.getElementById("ol-budget").value) : null;
+  } else {
+    body.budget_top = document.getElementById("ol-budget-top").value ? parseFloat(document.getElementById("ol-budget-top").value) : null;
+    body.budget_bottom = document.getElementById("ol-budget-bottom").value ? parseFloat(document.getElementById("ol-budget-bottom").value) : null;
+    body.budget_shoes = document.getElementById("ol-budget-shoes").value ? parseFloat(document.getElementById("ol-budget-shoes").value) : null;
+  }
+
+  if (!body.scene && !body.style && !body.budget && !body.budget_top && !body.budget_bottom && !body.budget_shoes && !body.other) { alert("请至少填写一项需求"); return; }
 
   document.getElementById("online-loading").classList.remove("hidden");
   document.getElementById("online-result").innerHTML = "";
@@ -589,7 +655,6 @@ function renderOnlineResult(data) {
   const CAT_LABELS = { top: "上衣", bottom: "下装", shoes: "鞋子" };
   let html = `<div class="purchase-summary">${esc(data.summary)}</div>`;
 
-  // Outfit plan cards
   (data.outfit_plan?.items || []).forEach(item => {
     html += `<div class="plan-card">
       <div class="plan-cat">${CAT_LABELS[item.category] || item.category}</div>
@@ -599,11 +664,11 @@ function renderOnlineResult(data) {
     </div>`;
   });
 
-  // Product cards by category
   const products = data.products_by_category || {};
   for (const [cat, items] of Object.entries(products)) {
     if (!items || !items.length) continue;
     html += `<div class="category-section-title">${CAT_LABELS[cat] || cat} · 商品推荐</div>`;
+    html += `<div class="product-grid">`;
     items.slice(0, 5).forEach(p => {
       const finalPrice = ((p.min_group_price - (p.coupon_discount || 0)) / 100).toFixed(1);
       const origPrice = (p.min_normal_price / 100).toFixed(1);
@@ -617,6 +682,7 @@ function renderOnlineResult(data) {
         </div>
       </div>`;
     });
+    html += `</div>`;
   }
 
   el.innerHTML = html;
@@ -624,23 +690,67 @@ function renderOnlineResult(data) {
 
 // ═══ Offline Shopping ═══
 function initOfflineShopping() {
-  const occSel = document.getElementById("off-occasion");
-  occSel.addEventListener("change", () => {
-    document.getElementById("off-occasion-custom").classList.toggle("hidden", occSel.value !== "其他");
+  const scopeButtons = document.querySelectorAll("#panel-offline .scope-btn.seg");
+
+  function updateOfflineBudgetVisibility() {
+    const isCustom = document.querySelector("#panel-offline .budget-mode-btn.active")?.dataset.mode === "custom";
+    const topEl = document.getElementById("off-budget-top");
+    const bottomEl = document.getElementById("off-budget-bottom");
+    const shoesEl = document.getElementById("off-budget-shoes");
+    if (topEl) topEl.style.display = (isCustom && (offlineScope === "full" || offlineScope === "top_bottom" || offlineScope === "top")) ? "" : "none";
+    if (bottomEl) bottomEl.style.display = (isCustom && (offlineScope === "full" || offlineScope === "top_bottom" || offlineScope === "bottom")) ? "" : "none";
+    if (shoesEl) shoesEl.style.display = (isCustom && (offlineScope === "full" || offlineScope === "shoes")) ? "" : "none";
+  }
+
+  scopeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      scopeButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      offlineScope = btn.dataset.scope;
+      updateOfflineBudgetVisibility();
+    });
   });
+
+  document.querySelectorAll("#panel-offline .budget-mode-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#panel-offline .budget-mode-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const custom = btn.dataset.mode === "custom";
+      document.getElementById("off-budget-custom").classList.toggle("hidden", !custom);
+      document.getElementById("off-budget").classList.toggle("hidden", custom);
+      updateOfflineBudgetVisibility();
+    });
+  });
+
   document.getElementById("offline-form").addEventListener("submit", (e) => { e.preventDefault(); submitOffline(); });
 }
 
+const OFFLINE_SCOPE_LABELS = { full: "全套", top_bottom: "上衣+下装", top: "上衣", bottom: "下装", shoes: "鞋子" };
+
 async function submitOffline() {
   if (currentLat === null) { alert("等待定位完成后再试"); return; }
-  const occSel = document.getElementById("off-occasion");
-  const occasion = occSel.value === "其他" ? document.getElementById("off-occasion-custom").value.trim() || "其他" : occSel.value;
+  const scopeText = OFFLINE_SCOPE_LABELS[offlineScope] || "全套";
+  const otherNeed = document.getElementById("off-need").value.trim();
+  const need = otherNeed ? `[想买${scopeText}] ${otherNeed}` : `想买${scopeText}`;
+
+  const budgetMode = document.querySelector("#panel-offline .budget-mode-btn.active")?.dataset.mode || "average";
+  let budgetStr = document.getElementById("off-budget").value.trim();
+  if (budgetMode === "custom") {
+    const parts = [];
+    const t = document.getElementById("off-budget-top").value.trim();
+    const b = document.getElementById("off-budget-bottom").value.trim();
+    const s = document.getElementById("off-budget-shoes").value.trim();
+    if (t) parts.push(`上衣${t}元`);
+    if (b) parts.push(`下装${b}元`);
+    if (s) parts.push(`鞋子${s}元`);
+    budgetStr = parts.length ? `自行分配：${parts.join("，")}` : "";
+  }
 
   const body = {
     lat: currentLat, lon: currentLon,
-    need: document.getElementById("off-need").value.trim(),
-    occasion,
-    budget: document.getElementById("off-budget").value.trim(),
+    need,
+    occasion: document.getElementById("off-occasion").value.trim(),
+    budget: budgetStr,
     preferences: document.getElementById("off-preferences").value.trim(),
   };
 
@@ -660,14 +770,13 @@ function renderOfflineResult(data) {
   const el = document.getElementById("offline-result");
   let html = "";
 
-  // AI advice bubble
   if (data.advice) {
     html += `<div class="chat-bubble"><span class="chat-avatar">AI</span><div class="chat-text">${esc(data.advice)}</div></div>`;
   }
 
-  // Shopping list
   if (data.shopping_list?.length) {
     html += `<div class="shopping-section-title">购物清单</div>`;
+    html += `<div class="offline-grid">`;
     data.shopping_list.forEach(item => {
       html += `<div class="shopping-item-card">
         <div class="shopping-item-name">${esc(item.item)}</div>
@@ -675,11 +784,12 @@ function renderOfflineResult(data) {
         ${item.tips ? `<div class="shopping-item-tips">${esc(item.tips)}</div>` : ""}
       </div>`;
     });
+    html += `</div>`;
   }
 
-  // Stores
   if (data.stores?.length) {
     html += `<div class="shopping-section-title">附近店铺</div>`;
+    html += `<div class="offline-grid">`;
     data.stores.forEach(s => {
       html += `<div class="store-card">
         <div class="store-name">${esc(s.name)}</div>
@@ -691,6 +801,7 @@ function renderOfflineResult(data) {
         </div>
       </div>`;
     });
+    html += `</div>`;
   } else {
     html += `<div class="store-empty">暂未找到附近店铺（需配置百度地图AK）</div>`;
   }
